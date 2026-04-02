@@ -1,0 +1,209 @@
+@model CalculationViewModel
+
+@{
+    ViewData["Title"] = "Üretim Duruş Yönetimi";
+}
+
+@functions {
+    string FormatSure(TimeSpan ts)
+    {
+        int hours = (int)ts.TotalHours;
+        int minutes = ts.Minutes;
+        if (hours > 0 && minutes > 0)
+            return $"{hours}s {minutes}dk";
+        else if (hours > 0)
+            return $"{hours}s";
+        else
+            return $"{minutes}dk";
+    }
+
+    string GetStatusIcon(string statu) => statu switch {
+        "Üretim" => "ph-plus",
+        "Duruş" => "ph-minus",
+        _ => "ph-info"
+    };
+
+    string GetReasonIcon(string reason) => reason switch {
+        "Çay Molası" => "ph-coffee",
+        "Yemek Molası" => "ph-fork-knife",
+        "Arıza" => "ph-wrench",
+        _ => ""
+    };
+}
+
+<header class="app-header">
+    <div class="header-content">
+        <div class="logo-area">
+            <div class="logo-text">
+                <h1>KıvılcımPlus</h1>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="btnCalculate" class="btn-calculate" onclick="calculateBreaks()">
+                <span class="btn-icon"><i class="ph-bold ph-gear"></i></span>
+                <span class="btn-text">Hesapla</span>
+            </button>
+            <button id="btnClear" class="btn-clear" onclick="clearOutput()" disabled>
+                <span class="btn-icon"><i class="ph-bold ph-trash"></i></span>
+                <span class="btn-text">Temizle</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+
+    <section class="tables-input">
+        <div class="table-card table-card--red">
+            <div class="table-header table-header--red">
+                <div class="table-header-icon"><i class="ph-bold ph-clipboard-text"></i></div>
+                <div>
+                    <h2>Operatör Kayıtları</h2>
+                </div>
+            </div>
+            <div class="table-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-id">No</th>
+                            <th>Başlangıç Tarih</th>
+                            <th>Başlangıç Saat</th>
+                            <th>Bitiş Tarih</th>
+                            <th>Bitiş Saat</th>
+                            <th>Toplam Süre</th>
+                            <th>Durum</th>
+                            <th>Duruş Nedeni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in Model.OperatorRecords)
+                        {
+                            <tr class="@(record.Statu == "Duruş" ? "row-fault" : "")">
+                                <td class="col-id">@record.KayitNo</td>
+                                <td class="cell-center">@record.Baslangic.ToString("dd.MM.yyyy")</td>
+                                <td class="cell-center">@record.Baslangic.ToString("HH:mm")</td>
+                                <td class="cell-center">@record.Bitis.ToString("dd.MM.yyyy")</td>
+                                <td class="cell-center">@record.Bitis.ToString("HH:mm")</td>
+                                <td class="cell-center">@FormatSure(record.ToplamSure)</td>
+                                <td class="cell-center @(record.Statu == "Üretim" ? "status-production" : "status-fault")">
+                                    <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                        <i class="ph-bold @GetStatusIcon(record.Statu)"></i>
+                                        <span>@record.Statu</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(record.DurusNedeni))
+                                    {
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold @GetReasonIcon(record.DurusNedeni)"></i>
+                                            <span>@record.DurusNedeni</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @("—")
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table2-wrapper" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="table-card table-card--danger" style="width: 100%;">
+                <div class="table-header table-header--danger">
+                    <div class="table-header-icon"><i class="ph-bold ph-clock"></i></div>
+                    <div>
+                        <h2>Standart Duruşlar</h2>
+                    </div>
+                </div>
+                <div class="table-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Başlangıç</th>
+                                <th>Bitiş</th>
+                                <th>Süre</th>
+                                <th>Duruş Nedeni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var totalBreakMinutes = Model.StandardBreaks.Sum(b => (b.Bitis - b.Baslangic).TotalMinutes);
+                                var totalBreakDuration = TimeSpan.FromMinutes(totalBreakMinutes);
+                                var remainingRows = Math.Max(0, Model.OperatorRecords.Count - Model.StandardBreaks.Count);
+                                var blankRowsBeforeSummary = Math.Max(0, remainingRows - 2);
+                            }
+
+                            @foreach (var breakItem in Model.StandardBreaks)
+                            {
+                                <tr>
+                                    <td class="cell-center"><div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;"><i class="ph-bold ph-clock" style="opacity:0.5;"></i><span>@breakItem.Baslangic.ToString(@"hh\:mm")</span></div></td>
+                                    <td class="cell-center"><div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;"><i class="ph-bold ph-clock" style="opacity:0.5;"></i><span>@breakItem.Bitis.ToString(@"hh\:mm")</span></div></td>
+                                    <td class="cell-center">@FormatSure(breakItem.Bitis - breakItem.Baslangic)</td>
+                                    <td class="status-fault">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold @GetReasonIcon(breakItem.DurusNedeni)"></i>
+                                            <span>@breakItem.DurusNedeni</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            
+                            @for (int i = 0; i < blankRowsBeforeSummary; i++)
+                            {
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                            }
+
+                            <tr class="summary-title-row">
+                                <td colspan="4">Toplam Mola</td>
+                            </tr>
+                            <tr class="summary-value-row">
+                                <td colspan="4" class="cell-center">@FormatSure(totalBreakDuration)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="outputSection" class="output-section">
+        <div class="table-card table-card--blue">
+            <div class="table-header table-header--blue">
+                <div class="table-header-icon"><i class="ph-bold ph-chart-bar"></i></div>
+                <div>
+                    <h2>Hesaplanan Kayıtlar</h2>
+                </div>
+                <div class="record-count" id="recordCount">Kayıt Yok</div>
+            </div>
+            <div class="table-body">
+                <table id="outputTable">
+                    <thead>
+                        <tr>
+                            <th class="col-id">No</th>
+                            <th>Başlangıç Tarih</th>
+                            <th>Başlangıç Saat</th>
+                            <th>Bitiş Tarih</th>
+                            <th>Bitiş Saat</th>
+                            <th>Toplam Süre</th>
+                            <th>Durum</th>
+                            <th>Duruş Nedeni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outputBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+</main>

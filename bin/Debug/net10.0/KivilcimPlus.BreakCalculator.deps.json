@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "KivilcimPlus.BreakCalculator/1.0.0": {
+        "runtime": {
+          "KivilcimPlus.BreakCalculator.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "KivilcimPlus.BreakCalculator/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

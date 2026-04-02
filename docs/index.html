@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KivilcimPlus — Uretim Durus Yonetimi</title>
+    <meta name="description" content="Uretim kayitlarinda standart duruslari otomatik hesaplayan uygulama" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/site.css" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="logo-text">
+                    <h1>KivilcimPlus</h1>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="btnCalculate" class="btn-calculate" onclick="calculateBreaks()">
+                    <span class="btn-icon"><i class="ph-bold ph-gear"></i></span>
+                    <span class="btn-text">Hesapla</span>
+                </button>
+                <button id="btnClear" class="btn-clear" onclick="clearOutput()" disabled>
+                    <span class="btn-icon"><i class="ph-bold ph-trash"></i></span>
+                    <span class="btn-text">Temizle</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tables-input">
+            <div class="table-card table-card--red">
+                <div class="table-header table-header--red">
+                    <div class="table-header-icon"><i class="ph-bold ph-clipboard-text"></i></div>
+                    <div>
+                        <h2>Operator Kayitlari</h2>
+                    </div>
+                </div>
+                <div class="table-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-id">No</th>
+                                <th>Baslangic Tarih</th>
+                                <th>Baslangic Saat</th>
+                                <th>Bitis Tarih</th>
+                                <th>Bitis Saat</th>
+                                <th>Toplam Sure</th>
+                                <th>Durum</th>
+                                <th>Durus Nedeni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-id">1</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">07:30</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">08:30</td>
+                                <td class="cell-center">1s</td>
+                                <td class="cell-center status-production">
+                                    <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                        <i class="ph-bold ph-plus"></i>
+                                        <span>Uretim</span>
+                                    </div>
+                                </td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-id">2</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">08:30</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">12:00</td>
+                                <td class="cell-center">3s 30dk</td>
+                                <td class="cell-center status-production">
+                                    <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                        <i class="ph-bold ph-plus"></i>
+                                        <span>Uretim</span>
+                                    </div>
+                                </td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-id">3</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">12:00</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">13:00</td>
+                                <td class="cell-center">1s</td>
+                                <td class="cell-center status-production">
+                                    <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                        <i class="ph-bold ph-plus"></i>
+                                        <span>Uretim</span>
+                                    </div>
+                                </td>
+                                <td>—</td>
+                            </tr>
+                            <tr class="row-fault">
+                                <td class="col-id">4</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">13:00</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">13:45</td>
+                                <td class="cell-center">45dk</td>
+                                <td class="cell-center status-fault">
+                                    <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                        <i class="ph-bold ph-minus"></i>
+                                        <span>Durus</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                        <i class="ph-bold ph-wrench"></i>
+                                        <span>Ariza</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-id">5</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">13:45</td>
+                                <td class="cell-center">23.05.2020</td>
+                                <td class="cell-center">17:30</td>
+                                <td class="cell-center">3s 45dk</td>
+                                <td class="cell-center status-production">
+                                    <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                        <i class="ph-bold ph-plus"></i>
+                                        <span>Uretim</span>
+                                    </div>
+                                </td>
+                                <td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="table2-wrapper" style="display: flex; flex-direction: column; height: 100%;">
+                <div class="table-card table-card--danger" style="width: 100%;">
+                    <div class="table-header table-header--danger">
+                        <div class="table-header-icon"><i class="ph-bold ph-clock"></i></div>
+                        <div>
+                            <h2>Standart Duruslar</h2>
+                        </div>
+                    </div>
+                    <div class="table-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Baslangic</th>
+                                    <th>Bitis</th>
+                                    <th>Sure</th>
+                                    <th>Durus Nedeni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="cell-center">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-clock" style="opacity:0.5;"></i><span>10:00</span>
+                                        </div>
+                                    </td>
+                                    <td class="cell-center">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-clock" style="opacity:0.5;"></i><span>10:15</span>
+                                        </div>
+                                    </td>
+                                    <td class="cell-center">15dk</td>
+                                    <td class="status-fault">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-coffee"></i>
+                                            <span>Cay Molasi</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="cell-center">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-clock" style="opacity:0.5;"></i><span>12:00</span>
+                                        </div>
+                                    </td>
+                                    <td class="cell-center">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-clock" style="opacity:0.5;"></i><span>12:30</span>
+                                        </div>
+                                    </td>
+                                    <td class="cell-center">30dk</td>
+                                    <td class="status-fault">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-fork-knife"></i>
+                                            <span>Yemek Molasi</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="cell-center">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-clock" style="opacity:0.5;"></i><span>15:00</span>
+                                        </div>
+                                    </td>
+                                    <td class="cell-center">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-clock" style="opacity:0.5;"></i><span>15:15</span>
+                                        </div>
+                                    </td>
+                                    <td class="cell-center">15dk</td>
+                                    <td class="status-fault">
+                                        <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem;">
+                                            <i class="ph-bold ph-coffee"></i>
+                                            <span>Cay Molasi</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="summary-title-row">
+                                    <td colspan="4">Toplam Mola</td>
+                                </tr>
+                                <tr class="summary-value-row">
+                                    <td colspan="4" class="cell-center">1s</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="outputSection" class="output-section">
+            <div class="table-card table-card--blue">
+                <div class="table-header table-header--blue">
+                    <div class="table-header-icon"><i class="ph-bold ph-chart-bar"></i></div>
+                    <div>
+                        <h2>Hesaplanan Kayitlar</h2>
+                    </div>
+                    <div class="record-count" id="recordCount">Kayit Yok</div>
+                </div>
+                <div class="table-body">
+                    <table id="outputTable">
+                        <thead>
+                            <tr>
+                                <th class="col-id">No</th>
+                                <th>Baslangic Tarih</th>
+                                <th>Baslangic Saat</th>
+                                <th>Bitis Tarih</th>
+                                <th>Bitis Saat</th>
+                                <th>Toplam Sure</th>
+                                <th>Durum</th>
+                                <th>Durus Nedeni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="outputBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="./js/site.js"></script>
+</body>
+</html>
